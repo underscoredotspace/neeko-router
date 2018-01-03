@@ -1,0 +1,14 @@
+{
+  "name": "neeko-router",
+  "version": "0.1.0",
+  "main": "src/router.js",
+  "author": "Colin Tindle <ampersand@underscore.space>",
+  "license": "CC-BY-4.0",
+  "scripts": {
+    "start": "parcel src/index.html",
+    "build": "parcel build src/index.html --public-url ./"
+  },
+  "devDependencies": {
+    "parcel-bundler": "^1.4.1"
+  }
+}
