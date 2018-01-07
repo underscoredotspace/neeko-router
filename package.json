@@ -5,14 +5,32 @@
   "author": "Colin Tindle <ampersand@underscore.space>",
   "license": "CC-BY-4.0",
   "scripts": {
-    "start": "parcel src/index.html",
-    "build": "parcel build src/index.html --public-url ./"
+    "start": "parcel demo/index.html",
+    "build": "parcel build demo/index.html --public-url ./",
+    "test": "jest --watchAll"
   },
   "devDependencies": {
+    "babel-jest": "^22.0.4",
+    "babel-preset-env": "^1.6.1",
+    "jest": "^22.0.4",
     "parcel-bundler": "^1.4.1"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/underscoredotspace/neeko-router"
+  },
+  "babel": {
+    "presets": [
+      "env"
+    ]
+  },
+  "jest": {
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.js"
+    ],
+    "roots": [
+      "src"
+    ]
   }
 }

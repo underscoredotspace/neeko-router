@@ -2,7 +2,7 @@
 
 A wee client side router. Yes, routers have been done before, but... I was bored. 
 
-In the browser, the router acts in a similar way to the AngularJS 1.x router in that you navigate to `/#/[routename]`. A route called  `/page/:page` will let you go to `/#/page/5` and get an object `{page:5}` in the callback. 
+In the browser, the router acts in a similar way to the AngularJS 1.x router in that you navigate to `/#/[routename]`. A route called `/page/:page` will let you go to `/#/page/5` and get an object `{page:5}` in the callback. 
 
 
 ## How to use
@@ -12,19 +12,34 @@ I think that the syntax is a little more pleasant than Angular's, but I make no 
 ```javascript
 import NeekoRouter from 'neeko-router'
 const router = new NeekoRouter()
+```
 
-// Matches '/#/shape/5/true` and passes an object like {points:5, trails:true} to the callback
-router.on('/shape/:points/:trails', ({ points, trails }) => {
-  // do something clever
-})
+Optionally, NeekoRouter can take a parameter to specify the route to go to when an invalid route is requested. The default is `/404`. 
 
+```javascript
+const router = new NeekoRouter('/home')
+```
+
+```javascript
 // Matches the `/#/home`
 router.on('/home', () => {
   alert ('Home sweet home. Or something.')
 })
 ```
 
-As this is set up as an es6 module, you will need to build with something. I use Parcel cos it's easy, but WebPack is probably most commonly used. 
+```javascript
+// Matches `/#/shape/5/true` and passes an object like {points:5, trails:true} to the callback
+router.on('/shape/:points/:trails', ({ points, trails }) => {
+  // do something clever
+})
+```
+
+```javascript
+// Go to the `/home` route - navigates to `/#/home`
+router.go('/home')
+```
+
+As this is set up as an es6 module, you will need to build with something. I use Parcel cos it's easy, but WebPack is probably most commonly used. There is a demo at /demo which can be run with `yarn start`. This starts a Parcel dev server at `http://localhost:1234`. 
 
 
 ## Contributions
