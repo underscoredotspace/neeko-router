@@ -1,6 +1,6 @@
 import NeekoRouter from '../src/router'
 
-const router = new NeekoRouter('/home')
+const router = new NeekoRouter()
 
 const routeData = document.getElementById('route-data')
 
@@ -16,4 +16,4 @@ router.on('/404', () => {
   routeData.innerText = 'You are at 404 not found'
 })
 
-//router.go('/home')
+router.go('/home')

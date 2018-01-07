@@ -1,10 +1,17 @@
 export default class NeekoRouter {
 	constructor(defaultRoute = '/404') {
-		this.defaultRoute = defaultRoute
 		this.routes = []
 		this.hashChange = this.hashChange.bind(this)
 		window.addEventListener('hashchange', this.hashChange)
+		this.setDefaultRoute(defaultRoute)
 		this.hashChange()
+	}
+
+	setDefaultRoute(defaultRoute) {
+		this.defaultRoute = defaultRoute
+		this.on(defaultRoute, () => {
+			console.error('Route is invalid')
+		})
 	}
 
 	on(matcher, cb) {
@@ -24,14 +31,9 @@ export default class NeekoRouter {
 	// checks validity of matcher
 	validMatcher(matcher){
 		let segments = matcher
-			.replace(/\/{2,}/g, '/')		// Remove duplicated slashes
-			.replace(/^(.+?)\/$/, "$1") // Remove trailing slash
-			.split('/')									// Split to array by '/'
-	
-		if(segments.length < 2) {
-			// Probably missing the trailing slash
-			return null
-		}
+			.replace(/\/{2,}/g, '/')					// Remove duplicated slashes
+			.replace(/^\/?(.+?)\/?$/, "/$1") 	// Remove trailing slash and enforce leading
+			.split('/')												// Split to array by '/'
 
 		// Check each segment is letters, numbers or selected symbol
 		// Optionally starting with ':'
@@ -41,13 +43,13 @@ export default class NeekoRouter {
     
 		for (let segment of segments) {
 			if (!reMatcher.test(segment)) {
-				// matcher segment is not in valid format
+				// ERROR: matcher segment is not in valid format
 				return null
 			}
 			if(segment.substring(0,1) === ':') {
         const param = segment.substring(1)
         if (params.includes(param)) {
-					// matcher param segment is duplicate
+					// ERROR: matcher param is duplicate
           return null
         }
 				params.push(param)
@@ -58,7 +60,8 @@ export default class NeekoRouter {
 		}
 	
 		// Return cleaned up (valid) matcher
-		return {matcher:newSegments.join('/'), params}
+		const validMatcher = {matcher:newSegments.join('/'), params}
+		return validMatcher
 	}
 
 	// called when hashchange event fires
@@ -71,7 +74,7 @@ export default class NeekoRouter {
 			this.route = hash.slice(1,hash.length)
 		}
 
-		for(let route in this.routes) {
+		for (let route in this.routes) {
 			if (this.checkRoute(route)) {return}
 		}
 		this.go(this.defaultRoute)
