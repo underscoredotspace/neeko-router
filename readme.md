@@ -1,5 +1,7 @@
 # Neeko Router
 
+[![Build Status](https://travis-ci.org/underscoredotspace/neeko-router.svg?branch=master)](https://travis-ci.org/underscoredotspace/neeko-router)[![Coverage Status](https://coveralls.io/repos/github/underscoredotspace/neeko-router/badge.svg?branch=master)](https://coveralls.io/github/underscoredotspace/neeko-router?branch=master)
+
 A wee client side router. Yes, routers have been done before, but... I was bored. 
 
 In the browser, the router acts in a similar way to the AngularJS 1.x router in that you navigate to `/#/[routename]`. A route called `/page/:page` will let you go to `/#/page/5` and get an object `{page:5}` in the callback. 
