@@ -11,22 +11,36 @@ export default class NeekoRouter {
 	}
 
 	normaliseHash(hash) {
-		const reMissingSlash = /^#([^\/].*)/
-		const reTrailingSlash = /^#\/(.*)\/$/
 		
 		if (hash === '') {
 			this.go('/')
 			return true
-		} else if (reMissingSlash.test(hash)) {
-			this.go(`/${hash.replace(reMissingSlash, '$1')}`)
-			return true
-		} else if(reTrailingSlash.test(hash)) {
-			this.go(`/${hash.replace(reTrailingSlash, '$1')}`)
-			return true
+		} 
+		
+		const reMissingSlash = /^([^\/].*)/
+		const reTrailingSlash = /^\/(.*)\/$/
+
+		hash = hash.replace(/^#(.+)$/, '$1')
+
+		let changed = false
+		if (reMissingSlash.test(hash)) {
+			hash = `/${hash.replace(reMissingSlash, '$1')}`
+			changed = true
+		} 
+
+		console.log(hash)
+		if (reTrailingSlash.test(hash)) {
+			hash = `/${hash.replace(reTrailingSlash, '$1')}`
+			changed = true
 		}
 
-		this.route = hash.replace(/^#(.+)$/, '$1')
-		return false
+		if (changed) {
+			this.go(hash)
+			return changed
+		}
+
+		this.route = hash
+		return changed
 	}
 
 	setDefaultRoute(defaultRoute) {

@@ -144,3 +144,64 @@ describe('Go to route: `NeekoRouter.hashChange()`', () => {
     expect(window.location.hash).toBe('#/fail')
   })
 })
+
+describe('normaliseHash', () => {
+  let router
+  beforeEach(() => {
+    router = new NeekoRouter()
+    router.go = jest.fn()
+  })
+
+  test('Already normal request', () => {
+    expect.assertions(2)
+    const change = router.normaliseHash('#/home')
+    expect(router.go).not.toHaveBeenCalled()
+    expect(change).toBeFalsy()
+  })
+
+  test('Missing slash after hash', () => {
+    expect.assertions(2)
+    const change = router.normaliseHash('#home')
+    expect(router.go).toHaveBeenCalledWith('/home')
+    expect(change).toBeTruthy()
+  })
+
+  test('Superfulous trailing slash', () => {
+    expect.assertions(2)
+    const change = router.normaliseHash('#/home/')
+    expect(router.go).toHaveBeenCalledWith('/home')
+    expect(change).toBeTruthy()
+  })
+
+  test('Superfulous trailing slash and missing after hash slash', () => {
+    expect.assertions(2)
+    const change = router.normaliseHash('#truck/')
+    expect(router.go).toHaveBeenCalledWith('/truck')
+    expect(change).toBeTruthy()
+  })
+
+  test('No hash', () => {
+    expect.assertions(2)
+    const change = router.normaliseHash('')
+    expect(router.go).toHaveBeenCalledWith('/')
+    expect(change).toBeTruthy()
+  })
+})
+
+/*
+describe('setDefaultRoute', () => {
+  
+})
+
+describe('go', () => {
+  
+})
+
+describe('validMatcher', () => {
+  
+})
+
+describe('checkRoute', () => {
+  
+})
+*/
