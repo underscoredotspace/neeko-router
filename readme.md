@@ -1,6 +1,6 @@
 # Neeko Router
 
-[![Build Status](https://travis-ci.org/underscoredotspace/neeko-router.svg?branch=master)](https://travis-ci.org/underscoredotspace/neeko-router)[![Coverage Status](https://coveralls.io/repos/github/underscoredotspace/neeko-router/badge.svg?branch=master)](https://coveralls.io/github/underscoredotspace/neeko-router?branch=master)
+[![Build Status](https://travis-ci.org/underscoredotspace/neeko-router.svg?branch=master)](https://travis-ci.org/underscoredotspace/neeko-router) [![Coverage Status](https://coveralls.io/repos/github/underscoredotspace/neeko-router/badge.svg?branch=master)](https://coveralls.io/github/underscoredotspace/neeko-router?branch=master)
 
 A wee client side router. Yes, routers have been done before, but... I was bored. 
 
