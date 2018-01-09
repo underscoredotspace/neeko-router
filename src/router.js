@@ -51,11 +51,12 @@ export default class NeekoRouter {
 		window.location.hash = `#${route}`
 	}
 
-	// checks validity of matcher
+	// checks validity of and returns cleaned up matcher
 	validMatcher(matcher){
 		let segments = matcher
 			.replace(/\/{2,}/g, '/')					// Remove duplicated slashes
 			.replace(/^\/?(.+?)\/?$/, "/$1") 	// Remove trailing slash and enforce leading
+			.replace(/\/{2,}/g, '/')					// Remove duplicated slashes created when matcher is '/'
 			.split('/')												// Split to array by '/'
 
 		// Check each segment is letters, numbers or selected symbols
@@ -89,6 +90,7 @@ export default class NeekoRouter {
 
 	// called when hashchange event fires
 	hashChange() {
+		// When normaliseHash returns true it means a redirect happened
 		if (this.normaliseHash(window.location.hash)) {return}
 
 		for (let route in this.routes) {
