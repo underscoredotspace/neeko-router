@@ -4,7 +4,8 @@ describe('Initialisation', () => {
   test('No defaultRoute parameter', () => {
     expect.assertions(1)
     const router = new NeekoRouter()
-
+    window.location.hash = '#/404'
+    router.hashChange()
     expect(router.defaultRoute).toBe('/404')
   })
 
@@ -85,6 +86,15 @@ describe('Go to route: `NeekoRouter.hashChange()`', () => {
     router.hashChange()
   })
 
+  test('Go to route with missing / after #', () => {
+    expect.assertions(1)
+    router.go = jest.fn()
+
+    window.location.hash = '#test'
+    router.hashChange()
+    expect(router.go).toHaveBeenCalledWith('/test')
+  })
+
   test('Go to route with no params', () => {
     expect.assertions(1)
     router.on('/test', params => {
@@ -113,7 +123,17 @@ describe('Go to route: `NeekoRouter.hashChange()`', () => {
     expect(window.location.hash).toBe('#/404')
   })
 
-  test('Go to unset route with customer fail route', () => {
+  test('Go to route with params with trailing slash', () => {
+    expect.assertions(1)
+    router.go = jest.fn()
+
+    window.location.hash = '#/page/5/'
+    router.hashChange()
+    expect(router.go).toHaveBeenCalledWith('/page/5')
+  })
+
+
+  test('Go to unset route with custom fail route', () => {
     expect.assertions(1)
     router = new NeekoRouter('/fail')
     router.on('/test', params => {

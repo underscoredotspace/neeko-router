@@ -18,6 +18,9 @@
     "jest": "^22.0.4",
     "parcel-bundler": "^1.4.1"
   },
+  "files": [
+    "src/"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/underscoredotspace/neeko-router"
