@@ -88,11 +88,12 @@ describe('Go to route: `NeekoRouter.hashChange()`', () => {
 
   test('Go to route with missing / after #', () => {
     expect.assertions(1)
-    router.go = jest.fn()
 
+    router.on('/test', () => {
+      expect(window.location.hash).toBe('#/test')
+    })
     window.location.hash = '#test'
     router.hashChange()
-    expect(router.go).toHaveBeenCalledWith('/test')
   })
 
   test('Go to route with no params', () => {
@@ -124,12 +125,15 @@ describe('Go to route: `NeekoRouter.hashChange()`', () => {
   })
 
   test('Go to route with params with trailing slash', () => {
-    expect.assertions(1)
-    router.go = jest.fn()
+    expect.assertions(2)
+    
+    router.on('/page/:page', ({page}) => {
+      expect(window.location.hash).toBe('#/page/5')
+      expect(page).toBe('5')
+    })
 
     window.location.hash = '#/page/5/'
     router.hashChange()
-    expect(router.go).toHaveBeenCalledWith('/page/5')
   })
 
 
@@ -144,3 +148,69 @@ describe('Go to route: `NeekoRouter.hashChange()`', () => {
     expect(window.location.hash).toBe('#/fail')
   })
 })
+
+describe('normaliseHash', () => {
+  let router
+  beforeEach(() => {
+    router = new NeekoRouter()
+    router.fakeGo = jest.fn()
+  })
+
+  test('Already normal request', () => {
+    expect.assertions(2)
+    window.location.hash = '#/home'
+    const change = router.normaliseHash()
+    expect(router.fakeGo).not.toHaveBeenCalled()
+    expect(change).toBe('/home')
+  })
+
+  test('Missing slash after hash', () => {
+    expect.assertions(2)
+    window.location.hash = '#home'
+    const change = router.normaliseHash()
+    expect(router.fakeGo).toHaveBeenCalledWith('/home')
+    expect(change).toBe('/home')
+  })
+
+  test('Superfulous trailing slash', () => {
+    expect.assertions(2)
+    window.location.hash = '#/home/'
+    const change = router.normaliseHash()
+    expect(router.fakeGo).toHaveBeenCalledWith('/home')
+    expect(change).toBe('/home')
+  })
+
+  test('Superfulous trailing slash and missing after hash slash', () => {
+    expect.assertions(2)
+    window.location.hash = '#/truck/'
+    const change = router.normaliseHash()
+    expect(router.fakeGo).toHaveBeenCalledWith('/truck')
+    expect(change).toBe('/truck')
+  })
+
+  test('No hash', () => {
+    expect.assertions(2)
+    window.location.hash = ''
+    const change = router.normaliseHash()
+    expect(router.fakeGo).toHaveBeenCalledWith('/')
+    expect(change).toBe('/')
+  })
+})
+
+/*
+describe('setDefaultRoute', () => {
+  
+})
+
+describe('go', () => {
+  
+})
+
+describe('validMatcher', () => {
+  
+})
+
+describe('checkRoute', () => {
+  
+})
+*/

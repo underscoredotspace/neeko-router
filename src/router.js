@@ -2,7 +2,7 @@ export default class NeekoRouter {
 	constructor(defaultRoute = '/404') {
 		this.routes = []
 
-		this.normaliseHash(window.location.hash)
+		this.normaliseHash()
 
 		this.hashChange = this.hashChange.bind(this)
 		window.addEventListener('hashchange', this.hashChange)
@@ -10,23 +10,39 @@ export default class NeekoRouter {
 		this.setDefaultRoute(defaultRoute)
 	}
 
-	normaliseHash(hash) {
-		const reMissingSlash = /^#([^\/].*)/
-		const reTrailingSlash = /^#\/(.*)\/$/
-		
+	fakeGo(route) {
+		history.replaceState(null, null, `#${route}`)
+	}
+
+	normaliseHash() {
+		let hash = window.location.hash
+
 		if (hash === '') {
-			this.go('/')
-			return true
-		} else if (reMissingSlash.test(hash)) {
-			this.go(`/${hash.replace(reMissingSlash, '$1')}`)
-			return true
-		} else if(reTrailingSlash.test(hash)) {
-			this.go(`/${hash.replace(reTrailingSlash, '$1')}`)
-			return true
+			hash = '/'
+			this.fakeGo(hash)
+			return hash
+		} 
+		
+		const reMissingSlash = /^([^\/].*)/
+		const reTrailingSlash = /^\/(.*)\/$/
+
+		hash = hash.replace(/^#(.+)$/, '$1')
+
+		let changed = false
+		if (reMissingSlash.test(hash)) {
+			hash = `/${hash.replace(reMissingSlash, '$1')}`
+			changed = true
+		} 
+
+		if (reTrailingSlash.test(hash)) {
+			hash = `/${hash.replace(reTrailingSlash, '$1')}`
+			changed = true
 		}
 
-		this.route = hash.replace(/^#(.+)$/, '$1')
-		return false
+		if (changed) {
+			this.fakeGo(hash)
+		}
+		return hash
 	}
 
 	setDefaultRoute(defaultRoute) {
@@ -43,12 +59,7 @@ export default class NeekoRouter {
 		if (!validMatcher) {throw(new Error(`Matcher ${matcher} is invalid`))}
 
 		this.routes[validMatcher.matcher] = {cb, params:validMatcher.params}
-		this.checkRoute(validMatcher.matcher)
-	}
-
-	// Go to specified route
-	go(route) {
-		window.location.hash = `#${route}`
+		this.checkRoute(validMatcher.matcher, this.normaliseHash())
 	}
 
 	// checks validity of and returns cleaned up matcher
@@ -90,24 +101,26 @@ export default class NeekoRouter {
 
 	// called when hashchange event fires
 	hashChange() {
-		// When normaliseHash returns true it means a redirect happened
-		if (this.normaliseHash(window.location.hash)) {return}
+		const currentRoute = this.normaliseHash()
 
 		for (let route in this.routes) {
-			if (this.checkRoute(route)) {return}
+			if (this.checkRoute(route, currentRoute)) {return}
 		}
-		this.go(this.defaultRoute)
+
+		this.fakeGo(this.defaultRoute)
+		this.hashChange()
 	}
 
 	// checks to see if selected route is known
-	checkRoute(route) {
+	checkRoute(route, currentRoute) {
 		const re = new RegExp(`^${route}$`)
-		if (re.test(this.route)) {
+		if (re.test(currentRoute)) {
+			const matchedRoute = this.routes[route]
 			let params = {}
-			for (let param in this.routes[route].params) {
-				params[this.routes[route].params[param]] = this.route.match(re)[Number(param)+1]
+			for (let param in matchedRoute.params) {
+				params[matchedRoute.params[param]] = currentRoute.match(re)[Number(param)+1]
 			}
-			this.routes[route].cb(params)
+			matchedRoute.cb(params)
 			return true
 		}
 		return false
