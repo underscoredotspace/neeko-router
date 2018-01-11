@@ -197,19 +197,37 @@ describe('normaliseHash', () => {
   })
 })
 
-/*
-describe('setDefaultRoute', () => {
-  
-})
-
-describe('go', () => {
-  
-})
-
 describe('validMatcher', () => {
-  
+  let router
+  beforeEach(() => {
+    router = new NeekoRouter()
+  })
+
+  test('Vaid matcher, no params', () => {
+    expect.assertions(2)
+    const matcher = router.validMatcher('/home')
+    expect(matcher.matcher).toBe('/home')
+    expect(matcher.params).toHaveLength(0)
+  })
+
+  test('Vaid matcher, params', () => {
+    expect.assertions(3)
+    const matcher = router.validMatcher('/page/:page')
+    expect(matcher.matcher).toBe('/page/(.*)')
+    expect(matcher.params).toHaveLength(1)
+    expect(matcher.params).toMatchObject(['page'])
+  })
+
+  test('Vaid matcher, two params', () => {
+    expect.assertions(3)
+    const matcher = router.validMatcher('/page/:page/section/:section')
+    expect(matcher.matcher).toBe('/page/(.*)/section/(.*)')
+    expect(matcher.params).toHaveLength(2)
+    expect(matcher.params).toMatchObject(['page', 'section'])
+  })
 })
 
+/*
 describe('checkRoute', () => {
   
 })
