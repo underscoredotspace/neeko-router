@@ -1,6 +1,6 @@
 {
   "name": "neeko-router",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "main": "src/router.js",
   "author": "Colin Tindle <ampersand@underscore.space>",
   "license": "CC-BY-4.0",
