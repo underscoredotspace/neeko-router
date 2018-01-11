@@ -89,7 +89,7 @@ export default class NeekoRouter {
           return null
         }
 				params.push(param)
-				newSegments.push('(.*)')
+				newSegments.push('([^\/$]*)')
 			} else {
         newSegments.push(segment)
       }
@@ -112,7 +112,7 @@ export default class NeekoRouter {
 		this.hashChange()
 	}
 
-	// checks to see if selected route is known
+	// checks to see if currentRoute matches given route
 	checkRoute(route, currentRoute) {
 		const re = new RegExp(`^${route}$`)
 		if (re.test(currentRoute)) {

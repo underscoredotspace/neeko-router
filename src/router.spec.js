@@ -35,7 +35,7 @@ describe('Adding routes: `NeekoRouter.on()`', () => {
     expect.assertions(1)
     const expObject = {cb:jest.fn(), params:['page']}
     router.on('/page/:page', expObject.cb)
-    expect(router.routes['/page/(.*)']).toMatchObject(expObject)
+    expect(router.routes['/page/([^\/$]*)']).toMatchObject(expObject)
   })
 
   test('A route with no callback', () => {
@@ -221,7 +221,7 @@ describe('validMatcher', () => {
   test('Vaid matcher, params', () => {
     expect.assertions(3)
     const matcher = router.validMatcher('/page/:page')
-    expect(matcher.matcher).toBe('/page/(.*)')
+    expect(matcher.matcher).toBe('/page/([^\/$]*)')
     expect(matcher.params).toHaveLength(1)
     expect(matcher.params).toMatchObject(['page'])
   })
@@ -229,14 +229,55 @@ describe('validMatcher', () => {
   test('Vaid matcher, two params', () => {
     expect.assertions(3)
     const matcher = router.validMatcher('/page/:page/section/:section')
-    expect(matcher.matcher).toBe('/page/(.*)/section/(.*)')
+    expect(matcher.matcher).toBe('/page/([^\/$]*)/section/([^\/$]*)')
     expect(matcher.params).toHaveLength(2)
     expect(matcher.params).toMatchObject(['page', 'section'])
   })
 })
 
-/*
+
 describe('checkRoute', () => {
-  
+  let router
+  beforeEach(() => {
+    router = new NeekoRouter()
+  })
+  test('given text only route should match current route', () => {
+    expect.assertions(2)
+    const currentRoute = '/', route = '/', cb = jest.fn()
+    router.routes[route] = {cb, params:[]}
+    const match = router.checkRoute(route, currentRoute)
+
+    expect(match).toBeTruthy()
+    expect(cb).toHaveBeenCalled()
+  })
+
+  test('given text only route should not match current route', () => {
+    expect.assertions(2)
+    const currentRoute = '/home', route = '/', cb = jest.fn()
+    router.routes[route] = {cb, params:[]}
+    const match = router.checkRoute(route, currentRoute)
+
+    expect(match).toBeFalsy()
+    expect(cb).not.toHaveBeenCalled()
+  })
+
+  test('given params route should match current route', () => {
+    expect.assertions(2)
+    const currentRoute = '/page/5', route = '/page/(.*)', cb = jest.fn()
+    router.routes[route] = {cb, params:['page']}
+    const match = router.checkRoute(route, currentRoute)
+
+    expect(match).toBeTruthy()
+    expect(cb).toHaveBeenCalledWith({"page": "5"})
+  })
+
+  test('given params route should not match current route', () => {
+    expect.assertions(2)
+    const currentRoute = '/page/bugger/indeed', route = '/page/([^\/]*)', cb = jest.fn()
+    router.routes[route] = {cb, params:['page']}
+    const match = router.checkRoute(route, currentRoute)
+
+    expect(match).toBeFalsy()
+    expect(cb).not.toHaveBeenCalledWith()
+  })
 })
-*/
