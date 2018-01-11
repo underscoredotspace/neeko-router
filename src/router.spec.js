@@ -164,6 +164,14 @@ describe('normaliseHash', () => {
     expect(change).toBe('/home')
   })
 
+  test('Multiple slashes to be treated as one', () => {
+    expect.assertions(2)
+    window.location.hash = '#////page//5///'
+    const change = router.normaliseHash()
+    expect(router.fakeGo).toHaveBeenCalledWith('/page/5')
+    expect(change).toBe('/page/5')
+  })
+
   test('Missing slash after hash', () => {
     expect.assertions(2)
     window.location.hash = '#home'

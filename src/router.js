@@ -26,7 +26,8 @@ export default class NeekoRouter {
 		const reMissingSlash = /^([^\/].*)/
 		const reTrailingSlash = /^\/(.*)\/$/
 
-		hash = hash.replace(/^#(.+)$/, '$1')
+		hash = hash.replace(/^#(.+)$/, '$1') // drop the hash
+			.replace(/\/{2,}/g, '/') // remove duplicated slashes
 
 		let changed = false
 		if (reMissingSlash.test(hash)) {
