@@ -35,7 +35,7 @@ describe('Adding routes: `NeekoRouter.on()`', () => {
     expect.assertions(1)
     const expObject = {cb:jest.fn(), params:['page']}
     router.on('/page/:page', expObject.cb)
-    expect(router.routes['/page/(.*)']).toMatchObject(expObject)
+    expect(router.routes['/page/([^\/$]*)']).toMatchObject(expObject)
   })
 
   test('A route with no callback', () => {
@@ -164,6 +164,14 @@ describe('normaliseHash', () => {
     expect(change).toBe('/home')
   })
 
+  test('Multiple slashes to be treated as one', () => {
+    expect.assertions(2)
+    window.location.hash = '#////page//5///'
+    const change = router.normaliseHash()
+    expect(router.fakeGo).toHaveBeenCalledWith('/page/5')
+    expect(change).toBe('/page/5')
+  })
+
   test('Missing slash after hash', () => {
     expect.assertions(2)
     window.location.hash = '#home'
@@ -197,20 +205,79 @@ describe('normaliseHash', () => {
   })
 })
 
-/*
-describe('setDefaultRoute', () => {
-  
-})
-
-describe('go', () => {
-  
-})
-
 describe('validMatcher', () => {
-  
+  let router
+  beforeEach(() => {
+    router = new NeekoRouter()
+  })
+
+  test('Vaid matcher, no params', () => {
+    expect.assertions(2)
+    const matcher = router.validMatcher('/home')
+    expect(matcher.matcher).toBe('/home')
+    expect(matcher.params).toHaveLength(0)
+  })
+
+  test('Vaid matcher, params', () => {
+    expect.assertions(3)
+    const matcher = router.validMatcher('/page/:page')
+    expect(matcher.matcher).toBe('/page/([^\/$]*)')
+    expect(matcher.params).toHaveLength(1)
+    expect(matcher.params).toMatchObject(['page'])
+  })
+
+  test('Vaid matcher, two params', () => {
+    expect.assertions(3)
+    const matcher = router.validMatcher('/page/:page/section/:section')
+    expect(matcher.matcher).toBe('/page/([^\/$]*)/section/([^\/$]*)')
+    expect(matcher.params).toHaveLength(2)
+    expect(matcher.params).toMatchObject(['page', 'section'])
+  })
 })
+
 
 describe('checkRoute', () => {
-  
+  let router
+  beforeEach(() => {
+    router = new NeekoRouter()
+  })
+  test('given text only route should match current route', () => {
+    expect.assertions(2)
+    const currentRoute = '/', route = '/', cb = jest.fn()
+    router.routes[route] = {cb, params:[]}
+    const match = router.checkRoute(route, currentRoute)
+
+    expect(match).toBeTruthy()
+    expect(cb).toHaveBeenCalled()
+  })
+
+  test('given text only route should not match current route', () => {
+    expect.assertions(2)
+    const currentRoute = '/home', route = '/', cb = jest.fn()
+    router.routes[route] = {cb, params:[]}
+    const match = router.checkRoute(route, currentRoute)
+
+    expect(match).toBeFalsy()
+    expect(cb).not.toHaveBeenCalled()
+  })
+
+  test('given params route should match current route', () => {
+    expect.assertions(2)
+    const currentRoute = '/page/5', route = '/page/(.*)', cb = jest.fn()
+    router.routes[route] = {cb, params:['page']}
+    const match = router.checkRoute(route, currentRoute)
+
+    expect(match).toBeTruthy()
+    expect(cb).toHaveBeenCalledWith({"page": "5"})
+  })
+
+  test('given params route should not match current route', () => {
+    expect.assertions(2)
+    const currentRoute = '/page/bugger/indeed', route = '/page/([^\/]*)', cb = jest.fn()
+    router.routes[route] = {cb, params:['page']}
+    const match = router.checkRoute(route, currentRoute)
+
+    expect(match).toBeFalsy()
+    expect(cb).not.toHaveBeenCalledWith()
+  })
 })
-*/

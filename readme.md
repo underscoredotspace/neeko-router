@@ -9,21 +9,15 @@ In the browser, the router acts in a similar way to the AngularJS 1.x router in 
 
 ## How to use
 
-I think that the syntax is a little more pleasant than Angular's, but I make no claims about digest cycles. 
+I think that the syntax is a little more pleasant than Angular's, but I make no claims about digest cycles. The user is able to click the back and forward buttons in the browser, even following a error redirection. 
 
 ```javascript
 import NeekoRouter from 'neeko-router'
 const router = new NeekoRouter()
 ```
 
-Optionally, NeekoRouter can take a parameter to specify the route to go to when an invalid route is requested. The default is `/404`. 
-
 ```javascript
-const router = new NeekoRouter('/home')
-```
-
-```javascript
-// Matches the `/#/home`
+// Matches `/#/home`
 router.on('/home', () => {
   alert ('Home sweet home. Or something.')
 })
@@ -36,21 +30,36 @@ router.on('/shape/:points/:trails', ({ points, trails }) => {
 })
 ```
 
+Optionally, NeekoRouter can take a parameter to specify the route to go to when an invalid route is requested. The default is `/404`. 
+
 ```javascript
-// Go to the `/home` route - navigates to `/#/home`
-router.go('/home')
+// Make `#/notfound` the error route
+const router = new NeekoRouter('/notfound')
+
+// Matches `/notfound`
+router.on('/notfound', () => {
+  alert ('This is not here')
+})
 ```
 
-As this is set up as an es6 module, you will need to build with something. I use Parcel cos it's easy, but WebPack is probably most commonly used. There is a demo at /demo which can be run with `yarn start`. This starts a Parcel dev server at `http://localhost:1234`. 
+As this is set up as an es6 module, you will need to build with something. I use Parcel since it's simple, but WebPack is more commonly used. 
+
+See Neeko Router in action at [router.messy.cloud](https://router.messy.cloud) (hosted by Netlify)
 
 
 ## Contributions
 
-Fill your boots. I have no idea what my plan is for this just now, so if you have ideas please share them. 
+Fill your boots. I have no idea what my plan is for this just now, so if you have ideas please submit an [issue](https://github.com/underscoredotspace/neeko-router/issues). I will accept pull requests, ideally with test coverage for any new/changed code, but I'm happy to help with this during review. 
+
+## Future
+
+Version 2.0 is probably not far away, as i'd like to have an object passed to the `new NeekoRouter()` class rather than just a string to allow a few more options. I expect that the return value from the `router.on()` callback would more idiomatic like `(err, res)` rather than just the params object. 
+
 
 ## Licence
 
 Most of my work is licenced under Creative Commons Attribution 4.0 International ([CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)), this is no exception. 
+
 
 ## What's a Neeko? 
 
