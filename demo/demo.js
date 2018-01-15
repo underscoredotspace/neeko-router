@@ -15,3 +15,5 @@ router.on('/page/:page', ({page}) => {
 router.on('/404', () => {
   routeData.innerText = `This is 404 not found`
 })
+
+router.default('/')

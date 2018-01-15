@@ -1,18 +1,26 @@
 export default class NeekoRouter {
-	constructor(defaultRoute = '/404') {
-		this.routes = []
+	constructor(errorRoute = '/404') {
+    this.routes = []
+    this.matched = false
 
 		this.normaliseHash()
 
 		this.hashChange = this.hashChange.bind(this)
 		window.addEventListener('hashchange', this.hashChange)
 
-		this.setDefaultRoute(defaultRoute)
+		this.setErrorRoute(errorRoute)
 	}
 
 	fakeGo(route) {
 		history.replaceState(null, null, `#${route}`)
-	}
+  }
+  
+  default(route) {
+    if (!this.matched) {
+      this.fakeGo(route)
+      this.hashChange()
+    }
+  }
 
 	normaliseHash() {
 		let hash = window.location.hash
@@ -46,9 +54,9 @@ export default class NeekoRouter {
 		return hash
 	}
 
-	setDefaultRoute(defaultRoute) {
-		this.defaultRoute = defaultRoute
-		this.on(this.defaultRoute, () => {
+	setErrorRoute(errorRoute) {
+		this.errorRoute = errorRoute
+		this.on(this.errorRoute, () => {
 			console.error('Route not found')
 		})
 	}
@@ -60,7 +68,7 @@ export default class NeekoRouter {
 		if (!validMatcher) {throw(new Error(`Matcher ${matcher} is invalid`))}
 
 		this.routes[validMatcher.matcher] = {cb, params:validMatcher.params}
-		this.checkRoute(validMatcher.matcher, this.normaliseHash())
+    this.checkRoute(validMatcher.matcher, this.normaliseHash())
 	}
 
 	// checks validity of and returns cleaned up matcher
@@ -108,7 +116,7 @@ export default class NeekoRouter {
 			if (this.checkRoute(route, currentRoute)) {return}
 		}
 
-		this.fakeGo(this.defaultRoute)
+		this.fakeGo(this.errorRoute)
 		this.hashChange()
 	}
 
@@ -116,14 +124,15 @@ export default class NeekoRouter {
 	checkRoute(route, currentRoute) {
 		const re = new RegExp(`^${route}$`)
 		if (re.test(currentRoute)) {
+      this.matched = true
 			const matchedRoute = this.routes[route]
 			let params = {}
 			for (let param in matchedRoute.params) {
 				params[matchedRoute.params[param]] = currentRoute.match(re)[Number(param)+1]
 			}
-			matchedRoute.cb(params)
+      matchedRoute.cb(params)
 			return true
-		}
+    }
 		return false
 	}
 }

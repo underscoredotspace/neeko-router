@@ -1,19 +1,19 @@
 import NeekoRouter from './router'
 
 describe('Initialisation', () => {
-  test('No defaultRoute parameter', () => {
+  test('No errorRoute parameter', () => {
     expect.assertions(1)
     const router = new NeekoRouter()
     window.location.hash = '#/404'
     router.hashChange()
-    expect(router.defaultRoute).toBe('/404')
+    expect(router.errorRoute).toBe('/404')
   })
 
-  test('Including defaultRoute parameter', () => {
+  test('Including errorRoute parameter', () => {
     expect.assertions(1)
     const router = new NeekoRouter('/home')
 
-    expect(router.defaultRoute).toBe('/home')
+    expect(router.errorRoute).toBe('/home')
   })
 })
 
@@ -147,6 +147,41 @@ describe('Go to route: `NeekoRouter.hashChange()`', () => {
     router.hashChange()
     expect(window.location.hash).toBe('#/fail')
   })
+})
+
+describe('default', () => {
+  test('Go to some bad route to trigger default()', () => {
+    expect.assertions(1)
+    window.location.hash = '#/somebadroute'
+    let router = new NeekoRouter()
+    router.fakeGo = jest.fn()
+    router.hashChange = jest.fn()
+
+    router.on('/', params => {
+      expect(params).toMatchObject({})
+    })
+
+    router.default('/')
+
+    expect(router.fakeGo).toHaveBeenCalledWith('/')    
+  })
+
+  test('Go to a good route to not trigger default()', () => {
+    expect.assertions(2)
+    window.location.hash = '#/test'
+    let router = new NeekoRouter()
+    router.fakeGo = jest.fn()
+    router.hashChange = jest.fn()
+
+    router.on('/test', params => {
+      expect(params).toMatchObject({})
+    })
+
+    router.default('/')
+
+    expect(router.fakeGo).not.toHaveBeenCalled()    
+  })
+
 })
 
 describe('normaliseHash', () => {
