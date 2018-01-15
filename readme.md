@@ -16,6 +16,8 @@ import NeekoRouter from 'neeko-router'
 const router = new NeekoRouter()
 ```
 
+`.on()` function will match regular text routes:
+
 ```javascript
 // Matches `/#/home`
 router.on('/home', () => {
@@ -23,12 +25,22 @@ router.on('/home', () => {
 })
 ```
 
+and it will match param routes like this:
+
 ```javascript
 // Matches `/#/shape/5/true` and passes an object like {points:5, trails:true} to the callback
 router.on('/shape/:points/:trails', ({ points, trails }) => {
   // do something clever
 })
 ```
+
+After all of your initial routes have been created with `.on()` you should ask the router to make sure we're not at some other invalid route from an external link with `router.default()`: 
+
+```javscript
+router.default('/')
+```
+
+This is doing a straight redirect to that route, so it's up to you to ensure it's valid. 
 
 Optionally, NeekoRouter can take a parameter to specify the route to go to when an invalid route is requested. The default is `/404`. 
 
@@ -44,7 +56,16 @@ router.on('/notfound', () => {
 
 As this is set up as an es6 module, you will need to build with something. I use Parcel since it's simple, but WebPack is more commonly used. 
 
-See Neeko Router in action at [router.messy.cloud](https://router.messy.cloud) (hosted by Netlify)
+Alternatively, you can import via rawgit:
+
+```javascript
+import NeekoRouter from 'https://cdn.rawgit.com/underscoredotspace/neeko-router/v1.2.1/src/router.js'
+// yes that really works
+const router = new NeekoRouter()
+```
+
+
+See Neeko Router in action at [router.messy.cloud](https://router.messy.cloud) (hosted by Netlify). This is a live version of the `/demo` folder. 
 
 
 ## Contributions
